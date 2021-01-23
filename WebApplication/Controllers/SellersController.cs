@@ -1,13 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using WebApplication.Models;
 using WebApplication.Models.ViewModels;
 using WebApplication.Services;
-
-namespace WebApplication.Controllers
+namespace SalesWebMvc.Controllers
 {
     public class SellersController : Controller
     {
@@ -23,7 +22,6 @@ namespace WebApplication.Controllers
             var list = _sellerService.FindAll();
             return View(list);
         }
-
         public IActionResult Create()
         {
             var departments = _departmentService.FindAll();
@@ -35,6 +33,30 @@ namespace WebApplication.Controllers
         public IActionResult Create(Seller seller)
         {
             _sellerService.Insert(seller);
+            return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var obj = _sellerService.FindById(id.Value);
+            if (obj == null)
+            {
+                return NotFound();
+            }
+
+            return View(obj);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Delete(int id)
+        {
+            _sellerService.Remove(id);
             return RedirectToAction(nameof(Index));
         }
     }
